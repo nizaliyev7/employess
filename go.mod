@@ -1,6 +1,6 @@
 module github.com/nizaliyev7/employess
 
-go 1.23.0
+go 1.22.0
 
 require github.com/spf13/viper v1.19.0
 

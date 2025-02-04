@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: employees
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8082"
+    environment:
+      DATABASE_URL: "postgres://root:secret@db:5432/employees?sslmode=disable"
