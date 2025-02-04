@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"time"
 
@@ -90,4 +91,17 @@ func (server *Server) updateCities(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, city)
+}
+
+func (server *Server) getCities(ctx *gin.Context) {
+	cities, err := server.store.GetEmployees(ctx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, cities)
 }
