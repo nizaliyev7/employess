@@ -5,7 +5,7 @@
 package db
 
 import (
-	"database/sql"
+
 	"time"
 )
 
@@ -21,7 +21,7 @@ type Employees struct {
 	ID         int64          `json:"id"`
 	FirstName  string         `json:"first_name"`
 	LastName   string         `json:"last_name"`
-	MiddleName sql.NullString `json:"middle_name"`
+	MiddleName string         `json:"middle_name"`
 	Phone      string         `json:"phone"`
 	CreatedAt  time.Time      `json:"created_at"`
 	CityID     int64          `json:"city_id"`

@@ -15,3 +15,7 @@ UPDATE employees
 SET first_name = $2, last_name = $3, middle_name = $4, phone = $5, city_id = $6 
 WHERE id = $1 
 RETURNING *;
+
+-- name: GetEmployee :one
+SELECT * FROM employees
+WHERE id = $1 LIMIT 1;

@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createCity = `-- name: CreateCity :one
@@ -65,4 +66,46 @@ func (q *Queries) GetCities(ctx context.Context) ([]Cities, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateCity = `-- name: UpdateCity :one
+UPDATE cities
+SET name = $2,
+    city_code = $3,
+    is_active = $4
+WHERE id = $1
+RETURNING id, name, city_code, is_active, created_at
+`
+
+type UpdateCityParams struct {
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	CityCode string `json:"city_code"`
+	IsActive bool   `json:"is_active"`
+}
+
+type UpdateCityRow struct {
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CityCode  string    `json:"city_code"`
+	IsActive  bool      `json:"is_active"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func (q *Queries) UpdateCity(ctx context.Context, arg UpdateCityParams) (UpdateCityRow, error) {
+	row := q.db.QueryRowContext(ctx, updateCity,
+		arg.ID,
+		arg.Name,
+		arg.CityCode,
+		arg.IsActive,
+	)
+	var i UpdateCityRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CityCode,
+		&i.IsActive,
+		&i.CreatedAt,
+	)
+	return i, err
 }

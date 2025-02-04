@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -20,7 +19,7 @@ RETURNING id, first_name, last_name, middle_name, phone, created_at, city_id
 type CreateEmployeeParams struct {
 	FirstName  string         `json:"first_name"`
 	LastName   string         `json:"last_name"`
-	MiddleName sql.NullString `json:"middle_name"`
+	MiddleName string         `json:"middle_name"`
 	Phone      string         `json:"phone"`
 	CityID     int64          `json:"city_id"`
 }
@@ -46,6 +45,26 @@ func (q *Queries) CreateEmployee(ctx context.Context, arg CreateEmployeeParams) 
 	return i, err
 }
 
+const getEmployee = `-- name: GetEmployee :one
+SELECT id, first_name, last_name, middle_name, phone, created_at, city_id FROM employees
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetEmployee(ctx context.Context, id int64) (Employees, error) {
+	row := q.db.QueryRowContext(ctx, getEmployee, id)
+	var i Employees
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.MiddleName,
+		&i.Phone,
+		&i.CreatedAt,
+		&i.CityID,
+	)
+	return i, err
+}
+
 const getEmployees = `-- name: GetEmployees :many
 SELECT employees.id, employees.first_name, employees.last_name, employees.middle_name, 
        employees.phone, employees.created_at, cities.name AS city
@@ -58,7 +77,7 @@ type GetEmployeesRow struct {
 	ID         int64          `json:"id"`
 	FirstName  string         `json:"first_name"`
 	LastName   string         `json:"last_name"`
-	MiddleName sql.NullString `json:"middle_name"`
+	MiddleName string         `json:"middle_name"`
 	Phone      string         `json:"phone"`
 	CreatedAt  time.Time      `json:"created_at"`
 	City       string         `json:"city"`
@@ -106,7 +125,7 @@ type UpdateEmployeeParams struct {
 	ID         int64          `json:"id"`
 	FirstName  string         `json:"first_name"`
 	LastName   string         `json:"last_name"`
-	MiddleName sql.NullString `json:"middle_name"`
+	MiddleName string         `json:"middle_name"`
 	Phone      string         `json:"phone"`
 	CityID     int64          `json:"city_id"`
 }
