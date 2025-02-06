@@ -94,7 +94,7 @@ func (server *Server) updateCities(ctx *gin.Context) {
 }
 
 func (server *Server) getCities(ctx *gin.Context) {
-	cities, err := server.store.GetEmployees(ctx)
+	cities, err := server.store.GetCities(ctx)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
